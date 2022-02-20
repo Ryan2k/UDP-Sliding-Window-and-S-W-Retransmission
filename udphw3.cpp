@@ -335,10 +335,10 @@ int clientSlidingWindow( UdpSocket &sock, const int max, int message[], int wind
                         i = max; 
                         break;
                     }
-                    cerr << "recieved data " << message[0] << " acknowledgements " << acknowledgements << endl;
+                    //cerr << "recieved data " << message[0] << " acknowledgements " << acknowledgements << endl;
                     if(message[0] == acknowledgements)
                     {
-                        cout << "correct message couting as acknolegement" << endl;
+                        //cout << "correct message couting as acknolegement" << endl;
                         acknowledgements++; //increase the amount acknowledged
                         unacknowledged--; //take away from the for loop total     
                         break; //response is true and then cut the while loop

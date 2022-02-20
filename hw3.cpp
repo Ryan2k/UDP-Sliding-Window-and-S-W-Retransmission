@@ -66,7 +66,6 @@ int main( int argc, char *argv[] ) {
   cin >> testNumber;
 
   if ( myPart == CLIENT ) {
-
     Timer timer;           // define a timer
     int retransmits = 0;   // # retransmissions
 
