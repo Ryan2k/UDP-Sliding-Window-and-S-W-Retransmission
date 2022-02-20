@@ -313,13 +313,13 @@ int clientSlidingWindow( UdpSocket &sock, const int max, int message[], int wind
     int acknowledgements = 0;
     for(int i = 0; i < max; i++)
     {
-        cerr << "unacknowledged: " << unacknowledged << " windowsize: " << windowSize << endl;
+        //cerr << "unacknowledged: " << unacknowledged << " windowsize: " << windowSize << endl;
         if(unacknowledged < windowSize)//if the unacknowledged messages is less than windowsize 
         {
             message[0] = i; //insert the message into message[0]
             sock.sendTo((char*) message, MSGSIZE); //send the message to the server
             unacknowledged++;
-            cerr << " i " << i << " unacknolwedged: " << unacknowledged << endl;
+            //cerr << " i " << i << " unacknolwedged: " << unacknowledged << endl;
         }
 
         if(unacknowledged == windowSize) //has to be another if statment here otherwise breaks
@@ -346,11 +346,11 @@ int clientSlidingWindow( UdpSocket &sock, const int max, int message[], int wind
                 }
                 if(timer.lap() > TIMEOUT && unacknowledged == windowSize) //If we go over the 1500 Timeout 
                 {
-                    cerr << "Timed Out resending message" << endl;
+                    //cerr << "Timed Out resending message" << endl;
                     resubmissions = resubmissions + (i + windowSize - acknowledgements); //add to resubmissions count
                     i = acknowledgements; //resetting back to the last correctly submitted ack 
                     unacknowledged = 0; //go back to last valid ack
-                    cerr << "after acknolegements i: " << i << endl;
+                    //cerr << "after acknolegements i: " << i << endl;
                     break;
                 }       
             }
