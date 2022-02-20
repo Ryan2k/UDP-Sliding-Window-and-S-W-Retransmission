@@ -205,7 +205,6 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
 }*/
 
 #include <iostream>
-#include "udphw3.h"
 
 #define TIMEOUT 1500
 using namespace std;
