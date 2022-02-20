@@ -77,21 +77,24 @@ int main( int argc, char *argv[] ) {
       cout << timer.lap( ) << endl;
       break;
     case 2:
-      timer.start( );                                          // start timer
+      timer.start( );
+      cout << timer.lap() << endl;                                          // start timer
       retransmits = clientStopWait( sock, MAX, message );      // actual test
       cerr << "Elasped time = ";                               // lap timer
       cout << timer.lap( ) << endl;
       cerr << "retransmits = " << retransmits << endl;
       break;
     case 3:
+      cout << "Case 3" << endl;
       for ( int windowSize = 1; windowSize <= MAXWIN; windowSize++ ) {
 		timer.start( );                                        // start timer
+    cout << "timer lap " << timer.lap() << endl;
 		retransmits =
 		clientSlidingWindow( sock, MAX, message, windowSize ); // actual test
-		cerr << "Window size = ";                              // lap timer
-		cout << windowSize << " ";
-		cerr << "Elasped time = "; 
-		cout << timer.lap( ) << endl;
+		cerr << "Window size = " << windowSize << " ";                              // lap timer
+		//cout << windowSize << " ";
+		cerr << "Elasped time = " << timer.lap( ) << endl;
+		//cout << timer.lap( ) << endl;
 		cerr << "retransmits = " << retransmits << endl;
       }
       break;
