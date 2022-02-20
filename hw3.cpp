@@ -73,15 +73,17 @@ int main( int argc, char *argv[] ) {
     case 1:
       timer.start( );                                          // start timer
       clientUnreliable( sock, MAX, message );                  // actual test
-      cerr << "Elasped time = ";                               // lap timer
-      cout << timer.lap( ) << endl;
+      cerr << "Elasped time = " << timer.lap( ) << endl;
+      //cerr << "Elasped time = ";                               // lap timer
+      //cout << timer.lap( ) << endl;
       break;
     case 2:
       timer.start( );
       cout << timer.lap() << endl;                                          // start timer
       retransmits = clientStopWait( sock, MAX, message );      // actual test
-      cerr << "Elasped time = ";                               // lap timer
-      cout << timer.lap( ) << endl;
+      cerr << "Elasped time = " << timer.lap( ) << endl;
+      //cerr << "Elasped time = ";                               // lap timer
+      //cout << timer.lap( ) << endl;
       cerr << "retransmits = " << retransmits << endl;
       break;
     case 3:
