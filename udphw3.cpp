@@ -20,7 +20,7 @@
  * client must resend the message. The function will count the number of messages it
  * had to retransmit and that will be the return value
  * 
- */
+ *
 int clientStopWait(UdpSocket &sock, const int max, int message[]) {
     int count = 0; // the number of retransmittions (what we will return)
 
@@ -71,8 +71,8 @@ int clientStopWait(UdpSocket &sock, const int max, int message[]) {
 /**
  * The server side code for stop and wait
  * Repeats recieving message[] and sending an acknowledgment to the client
- */
-void serverReliable(UdpSocket &sock, const int max, int message[]) {
+ *
+ * void serverReliable(UdpSocket &sock, const int max, int message[]) {
     // for each of the 20,000 packets
     for (int i = 0; i < max; i++) {
 
@@ -204,6 +204,96 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
     }
 }*/
 
+#include <iostream>
+#include "udphw3.h"
+
+#define TIMEOUT 1500
+using namespace std;
+
+/**
+ * sends message[] and receives an acknowledgment from the server max
+ * If the client cannot receive an acknowledgement immedietly
+ * it should start a Timer. If a timeout occurs (i.e., no response after 1500 usec)
+ * the client must resend the same message. The function must count the number of messages retransmitted and
+ * return it to the main function as its return value.
+ * @param socket the udp socket send data from
+ * @param int the maximum number of time (messages) to send
+ * @param message the message buffer
+ * @return number of retransmissions
+ **/
+int clientStopWait( UdpSocket &sock, const int max, int message[] )
+{
+ 
+    cout << "beginning clientStopWait" << endl;
+    int resubmissions = 0;
+    for(int i = 0; i < max; i++){ // loop for the 20000 times
+        message[0] = i; //insert the message into message[0]
+        Timer timer;
+        bool response = false;
+        int sent;
+        sent = sock.sendTo((char*) message, MSGSIZE); //send the message to the server
+        cout << "data sent to server" << endl;
+        timer.start();
+        while(true) //while I have not receieved an response
+        {
+            int responseData = sock.pollRecvFrom(); //Any data been recieved?
+            if(responseData > 0)
+                break; //response is true and then cut the while loop
+
+            if(timer.lap() > TIMEOUT && !response) //If we go over the 1500 Timeout 
+            {
+                cout << "response found " << endl;
+                response = true;
+                resubmissions++; //add to resubmissions count
+                i--; //take away from the for loop total     
+                break;
+            }
+        }
+        if(response) //if the response is found dont recieve the message
+            continue; //skip the iteration
+
+        sock.recvFrom((char*) message, MSGSIZE); //receieve the message from ther server
+        if(message[0] != i) //If it is a bad message
+        {
+            i--;    
+            resubmissions++;
+            continue; //Restart
+        }
+    }
+    cout << "finishing" << endl;
+    return resubmissions;
+}
+
+/**
+ * repeats receiving message[] and sending an acknowledgment at a server side max (=20,000) times using the sock object.
+ * @param socket the udp socket send data to
+ * @param int the maximum number of time (messages) to receive
+ * @param message the message buffer to receive 
+**/
+void serverReliable( UdpSocket &sock, const int max, int message[] )
+{
+    cout << "inside serverReliable" << endl;    
+    for(int i = 0; i < max; i++)    //loop through the 20000 messages
+    {
+        while(true)
+        {
+            int recievedData = 0;
+            recievedData = sock.pollRecvFrom(); //Any data been recieved?
+            if(recievedData > 0)
+            {
+                cout << "message recieved" << endl;
+                sock.recvFrom((char*) message, MSGSIZE); //recieve the information
+                if(message[0] == i) //only if its the correct one
+                {
+                    cout << "ack sent back to client" << endl;
+                    sock.ackTo((char *) &i, sizeof(i)); //if data has been receievd then I need to send it acknoledge it 
+                    break;                
+                }
+            }            
+         }
+    }
+}
+
 /**
  *sends message[] and receiving an acknowledgment from a server max (=20,000) times using the sock object.
  * As described above, the client can continuously send a new message[] and increasing the sequence number as long as the number of in-transit messages (i.e., # of unacknowledged messages) is less than "windowSize." 
@@ -255,7 +345,7 @@ int clientSlidingWindow( UdpSocket &sock, const int max, int message[], int wind
                         break; //response is true and then cut the while loop
                     }
                 }
-                if(timer.lap() > 1500 && unacknowledged == windowSize) //If we go over the 1500 Timeout 
+                if(timer.lap() > TIMEOUT && unacknowledged == windowSize) //If we go over the 1500 Timeout 
                 {
                     cerr << "Timed Out resending message" << endl;
                     resubmissions = resubmissions + (i + windowSize - acknowledgements); //add to resubmissions count
