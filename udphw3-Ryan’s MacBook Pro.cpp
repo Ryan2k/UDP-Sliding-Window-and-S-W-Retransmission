@@ -215,12 +215,6 @@ void serverEarlyRetrans( UdpSocket &sock, const int max, int message[], int wind
     while(count != max) {
         if(sock.pollRecvFrom() > 0){
             sock.recvFrom((char*) message, MSGSIZE); 
-
-            int chance = rand() % 10;
-
-            if (chance < 1) {
-                continue;
-            }
     
             if(message[0] == count){
                 
